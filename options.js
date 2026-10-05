@@ -121,7 +121,6 @@ function readForm() {
 function checkBackend(status) {
   backendReady = compatibleBackend(status);
   $('version-warning').hidden = backendReady;
-  $('backend-version').textContent = `界面 ${BUILD} / 后台 ${status.build || '旧版（不支持版本检查）'}`;
   $('save').disabled = saving || !backendReady;
   $('retry').disabled = !backendReady;
   return backendReady;
@@ -142,12 +141,28 @@ function renderList() {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'profile-item' + (p.domain === currentDomain ? ' selected' : '');
-    b.textContent = p.domain;
     if (filterQuery && !p.domain.toLowerCase().includes(filterQuery)) {
       b.style.display = 'none';
     }
+
+    const domainSpan = document.createElement('span');
+    domainSpan.className = 'profile-domain';
+    domainSpan.textContent = p.domain;
+    b.append(domainSpan);
+
     const small = document.createElement('small');
-    small.textContent = `${p.enabled ? '已启用' : '已停用'} · ${p.locale}${p.subdomains ? ' · 含子域名' : ''}`;
+    small.className = 'profile-meta';
+
+    const pill = document.createElement('span');
+    pill.className = 'status-pill ' + (p.enabled ? 'on' : 'off');
+    pill.textContent = p.enabled ? '已启用' : '已停用';
+    small.append(pill);
+
+    const desc = document.createElement('span');
+    desc.className = 'meta-detail';
+    desc.textContent = ` · ${p.locale}${p.subdomains ? ' · 含子域' : ''}`;
+    small.append(desc);
+
     b.append(small);
     b.onclick = () => {
       fill(p);
@@ -320,7 +335,7 @@ $('reload-extension').onclick = async () => {
     notice('草稿已保存，正在重载扩展；设置页将重新打开并恢复表单。');
     chrome.runtime.reload();
   } catch (e) {
-    notice(`无法自动重载：${e.message}。请在 chrome://extensions 手动重载，再打开工作台恢复草稿。`, true);
+    notice(`无法自动重载：${e.message}。请在 chrome://extensions 手动重载，再打开设置页恢复草稿。`, true);
     $('reload-extension').disabled = false;
   }
 };

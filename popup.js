@@ -65,7 +65,7 @@ try {
     stateEl.textContent = '需要开启「允许用户脚本」';
     stateEl.className = 'notice warning';
   } else if (r.lastError) {
-    stateEl.textContent = '配置恢复异常，请打开工作台';
+    stateEl.textContent = '配置恢复异常，请打开规则管理';
     stateEl.className = 'notice warning';
   } else if (p?.enabled) {
     stateEl.textContent = '● 已配置 · 新加载的页面生效';

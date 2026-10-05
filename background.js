@@ -48,9 +48,9 @@ async function handle(message) {
       const index=profiles.findIndex(p=>p.domain===message.domain);
       if(index<0||!profiles[index].enabled)throw new Error('请先保存并启用当前域名规则。');
       if(!await scriptsAvailable())throw new Error('请先开启允许用户脚本。');
-      if(!await chrome.permissions.contains({origins:patterns(profiles[index])}))throw new Error('站点权限已失效，请在工作台重新保存并授权。');
+      if(!await chrome.permissions.contains({origins:patterns(profiles[index])}))throw new Error('站点权限已失效，请在规则管理页重新保存并授权。');
       const {regionKnown,fonts,...region}=result.profile;
-      if(!regionKnown)throw new Error('该 IP 所在国家暂无语言预设，请在工作台手动匹配；未修改配置。');
+      if(!regionKnown)throw new Error('该 IP 所在国家暂无语言预设，请在规则管理页手动匹配；未修改配置。');
       profiles[index]=validateProfile({...profiles[index],...region});
       await apply(profiles);
       return {profile:profiles[index],ip:result.ip,country:result.country,city:result.city};

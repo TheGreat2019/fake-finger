@@ -9,21 +9,23 @@
   <div class="brand">
     <span class="brand-icon">◈</span>
     <div>浏览器伪装大师<small>DISGUISE MASTER</small></div>
-    <span class="version" style="margin-left:auto;">v1.5.0</span>
+    <span class="version" style="margin-left:auto;">v1.5.1</span>
   </div>
 
   <div class="card">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;">
+    <div class="section-head">
       <h2 id="host">正在读取当前页面…</h2>
     </div>
-    <div class="notice" id="state">检查配置中</div>
-    <p id="summary">按域名设置浏览器环境。</p>
+    <div class="card-body">
+      <div class="notice" id="state">检查配置中</div>
+      <p id="summary">按域名设置浏览器环境。</p>
+    </div>
   </div>
 
   <button type="button" id="sync-ip" class="outline full" disabled>按当前 IP 更新地区与位置</button>
   <p class="hint">查询 ipwho.is，保存时区、语言、Intl 与大致位置到匹配规则。包含子域名的规则会同步影响这些子域名。更新后固定，IP 改变时请再次更新；不会自动刷新页面。</p>
   <button type="button" id="configure" class="primary full">配置此域名 <span>↗</span></button>
-  <button type="button" id="dashboard" class="outline full">打开域名工作台</button>
+  <button type="button" id="dashboard" class="outline full">打开规则管理</button>
 
   <script type="module" src="popup.js"></script>
 </body>

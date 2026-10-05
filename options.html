@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>浏览器伪装大师 · 域名工作台</title>
+  <title>浏览器伪装大师 · 规则管理</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,9 +13,7 @@
       <span class="brand-icon">◈</span>
       <div>浏览器伪装大师<small>DISGUISE MASTER</small></div>
     </div>
-    <div class="aside-label">工作空间 <span>01</span></div>
-    <div class="nav-current">▦ <span>域名工作台</span></div>
-    <div class="aside-label">已保存的域名 <span id="count">0</span></div>
+    <div class="aside-label">已保存的规则 <span id="count">0</span></div>
     <div class="profile-search-wrap">
       <input type="text" id="profile-search" placeholder="搜索已存域名…" autocomplete="off">
     </div>
@@ -31,11 +29,8 @@
     <header>
       <div>
         <div class="eyebrow">PRIVACY / DOMAIN PROFILES</div>
-        <h1>让每个站点，看见你选择的环境。<span class="version">MV3 · v1.5.0</span></h1>
+        <h1>让每个站点，看见你选择的环境。<span class="version">v1.5.1</span></h1>
         <p>将语言、时区与浏览器特征组合为独立的域名配置。</p>
-      </div>
-      <div>
-        <p id="backend-version" class="hint">正在检查后台版本…</p>
       </div>
     </header>
 
@@ -53,20 +48,22 @@
 
     <form id="editor">
       <div class="cards-layout">
-        <!-- 左列：作用范围、地区与语言、模拟位置 -->
+        <!-- 左列：作用范围、地区与语言、模拟位置、站点数据清理 -->
         <div class="cards-col">
           <!-- 01 作用范围 -->
           <section class="card">
             <div class="section-head">
               <div><span class="step">01</span><h2>作用范围</h2></div>
-              <label class="switch"><input type="checkbox" id="enabled" checked> 启用此规则</label>
+              <label class="switch"><input type="checkbox" id="enabled" checked role="switch"><span class="toggle-track"></span><span>启用此规则</span></label>
             </div>
-            <div class="grid">
-              <label>目标域名<input id="domain" placeholder="例如 example.com" required autocomplete="off"><small>只填写域名；首次保存会请求该站点的访问权限。</small></label>
-              <div class="field">
-                <span>域名匹配</span>
-                <label class="check-box"><input type="checkbox" id="subdomains"> 同时匹配所有子域名</label>
-                <small>默认仅匹配此域名；规则范围不能重叠。</small>
+            <div class="card-body">
+              <div class="grid">
+                <label>目标域名<input id="domain" placeholder="例如 example.com" required autocomplete="off"><small>只填写域名；首次保存会请求该站点的访问权限。</small></label>
+                <div class="field">
+                  <span>域名匹配</span>
+                  <label class="check-box"><input type="checkbox" id="subdomains"> 同时匹配所有子域名</label>
+                  <small>默认仅匹配此域名；规则范围不能重叠。</small>
+                </div>
               </div>
             </div>
           </section>
@@ -77,40 +74,51 @@
               <div><span class="step">02</span><h2>地区与语言</h2></div>
               <span class="tag">随日期计算夏令时</span>
             </div>
-            <div class="preset-bar">
-              <label>快速套用地区<select id="region"><option value="">选择地区预设…</option></select></label>
-              <button type="button" id="match-ip" class="outline">◎ 根据当前 IP 匹配</button>
+            <div class="card-body">
+              <div class="preset-bar">
+                <label>快速套用地区<select id="region"><option value="">选择地区预设…</option></select></label>
+                <button type="button" id="match-ip" class="outline">◎ 根据当前 IP 匹配</button>
+              </div>
+              <p class="hint">IP 匹配查询 ipwho.is，仅填入表单，保存后生效；IP 为推测值。</p>
+              <div class="grid">
+                <label>IANA 时区<input id="timezone" list="timezones" required placeholder="America/New_York"><datalist id="timezones"></datalist><small>用于 Intl.DateTimeFormat 与 Date 本地时间。</small></label>
+                <label>Intl 默认区域<input id="locale" placeholder="en-US" required><small>默认日期、数字、排序等语言环境。</small></label>
+                <label class="wide">语言列表（按优先顺序，以逗号分隔）<input id="languages" placeholder="en-US, en" required><small>同步 navigator.languages 与 Accept-Language 权重。</small></label>
+              </div>
+              <div class="preview"><span>环境预览</span><strong id="region-preview">—</strong><small id="offset-preview"></small></div>
             </div>
-            <p class="hint">IP 匹配查询 ipwho.is，仅填入表单，保存后生效；IP 为推测值。</p>
-            <div class="grid">
-              <label>IANA 时区<input id="timezone" list="timezones" required placeholder="America/New_York"><datalist id="timezones"></datalist><small>用于 Intl.DateTimeFormat 与 Date 本地时间。</small></label>
-              <label>Intl 默认区域<input id="locale" placeholder="en-US" required><small>默认日期、数字、排序等语言环境。</small></label>
-              <label class="wide">语言列表（按优先顺序，以逗号分隔）<input id="languages" placeholder="en-US, en" required><small>同步 navigator.languages 与 Accept-Language 权重。</small></label>
-            </div>
-            <div class="preview"><span>环境预览</span><strong id="region-preview">—</strong><small id="offset-preview"></small></div>
           </section>
 
           <!-- 05 模拟浏览器位置 -->
           <section class="card">
             <div class="section-head">
               <div><span class="step">05</span><h2>模拟浏览器位置</h2></div>
-              <label class="switch"><input type="checkbox" id="locationEnabled"> 启用模拟位置</label>
+              <label class="switch"><input type="checkbox" id="locationEnabled" role="switch"><span class="toggle-track"></span><span>启用模拟位置</span></label>
             </div>
-            <div class="grid three">
-              <label>纬度<input id="latitude" type="number" step="any" min="-90" max="90" required></label>
-              <label>经度<input id="longitude" type="number" step="any" min="-180" max="180" required></label>
-              <label>精度（米）<input id="accuracy" type="number" min="1" max="100000" step="any" required></label>
+            <div class="card-body">
+              <div class="grid three">
+                <label>纬度<input id="latitude" type="number" step="any" min="-90" max="90" required></label>
+                <label>经度<input id="longitude" type="number" step="any" min="-180" max="180" required></label>
+                <label>精度（米）<input id="accuracy" type="number" min="1" max="100000" step="any" required></label>
+              </div>
+              <p class="hint">替换页面 Geolocation 坐标。不修改出口 IP 或系统定位权限。</p>
             </div>
-            <p class="hint">替换页面 Geolocation 坐标。不修改出口 IP 或系统定位权限。</p>
           </section>
+
+          <!-- 07 站点数据清理 -->
           <section class="card" id="site-data-card">
-            <div class="section-head"><div><span class="step">07</span><h2>站点数据清理</h2></div><span class="tag">按已保存规则</span></div>
-            <p class="hint">清除 Cookie、HTTP 缓存、LocalStorage、IndexedDB、Cache Storage、Service Worker 和站点文件存储（含已安装网站应用的数据）。保留域名配置。</p>
-            <p class="hint">确认后关闭目标标签页，清除其会话存储。将退出登录，未提交表单及离线数据会丢失。Cookie 按主域清理，可能使同一主域的其他子站退出登录，即使没有勾选子域名。</p>
-            <button type="button" id="preview-clean" class="outline full">预览选定域名的清理范围</button>
-            <pre id="clean-output" role="status" style="white-space:pre-wrap;overflow-wrap:anywhere;max-height:220px;overflow:auto"></pre>
-            <button type="button" id="clear-site-data" class="danger full" hidden>确认关闭目标标签页并清理</button>
-            <p class="hint">子域名和非默认端口从历史记录、Cookie、打开的标签页发现；无记录的存储、其他网站内嵌的会话及第三方域名可能遗漏。不删除历史记录、密码或服务器记录，不能保证网站将你识别为首次访问。</p>
+            <div class="section-head">
+              <div><span class="step">07</span><h2>站点数据清理</h2></div>
+              <span class="tag">按已保存规则</span>
+            </div>
+            <div class="card-body">
+              <p class="hint">清除 Cookie、HTTP 缓存、LocalStorage、IndexedDB、Cache Storage、Service Worker 和站点文件存储（含已安装网站应用的数据）。保留域名配置。</p>
+              <p class="hint">确认后关闭目标标签页，清除其会话存储。将退出登录，未提交表单及离线数据会丢失。Cookie 按主域清理，可能使同一主域的其他子站退出登录，即使没有勾选子域名。</p>
+              <button type="button" id="preview-clean" class="outline full">预览选定域名的清理范围</button>
+              <pre id="clean-output" role="status" style="white-space:pre-wrap;overflow-wrap:anywhere;max-height:220px;overflow:auto"></pre>
+              <button type="button" id="clear-site-data" class="danger full" hidden>确认关闭目标标签页并清理</button>
+              <p class="hint">子域名和非默认端口从历史记录、Cookie、打开的标签页发现；无记录的存储、其他网站内嵌的会话及第三方域名可能遗漏。不删除历史记录、密码或服务器记录，不能保证网站将你识别为首次访问。</p>
+            </div>
           </section>
         </div>
 
@@ -122,17 +130,19 @@
               <div><span class="step">03</span><h2>浏览器身份</h2></div>
               <span class="tag">UA + 请求头</span>
             </div>
-            <div class="grid">
-              <label>系统<select id="identityOS"><option value="random">随机系统</option><option>Windows</option><option>macOS</option><option>Linux</option></select></label>
-              <label>浏览器<select id="identityBrowser"><option value="random">随机浏览器</option><option>Chrome</option><option>Edge</option><option>Firefox</option><option>Safari</option></select></label>
-              <label class="wide">浏览器版本<select id="identityVersion"><option value="random">随机兼容版本</option><option value="preferred">优先版本（减少版本变化）</option></select></label>
+            <div class="card-body">
+              <div class="grid">
+                <label>系统<select id="identityOS"><option value="random">随机系统</option><option>Windows</option><option>macOS</option><option>Linux</option></select></label>
+                <label>浏览器<select id="identityBrowser"><option value="random">随机浏览器</option><option>Chrome</option><option>Edge</option><option>Firefox</option><option>Safari</option></select></label>
+                <label class="wide">浏览器版本<select id="identityVersion"><option value="random">随机兼容版本</option><option value="preferred">优先版本（减少版本变化）</option></select></label>
+              </div>
+              <button type="button" id="native-identity" class="outline full">使用真实浏览器身份（减少身份矛盾）</button>
+              <p class="hint">保留浏览器原生 UA、平台、版本和 Client Hints，可消除本扩展修改身份造成的部分不一致。不会隐藏真实系统，也不保证通过全部检测。</p>
+              <button type="button" id="random-ua" class="outline full">⤨ 一键随机身份（可能被识别）</button>
+              <p id="identity-summary" class="hint"></p>
+              <label>User-Agent<textarea id="ua" rows="3" readonly placeholder="点击一键随机生成身份；留空保持真实浏览器"></textarea></label>
+              <p class="hint">固定选项保持不变，仅随机标为随机的项目。Safari 仅可搭配 macOS。Chrome 从本机及前两个主版本选择；其他浏览器使用已发布的历史模板，不代表最新版本。平台自动同步，不替换 Chrome 引擎。</p>
             </div>
-            <button type="button" id="native-identity" class="outline full">使用真实浏览器身份（减少身份矛盾）</button>
-            <p class="hint">保留浏览器原生 UA、平台、版本和 Client Hints，可消除本扩展修改身份造成的部分不一致。不会隐藏真实系统，也不保证通过全部检测。</p>
-            <button type="button" id="random-ua" class="outline full">⤨ 一键随机身份（可能被识别）</button>
-            <p id="identity-summary" class="hint"></p>
-            <label>User-Agent<textarea id="ua" rows="3" readonly placeholder="点击一键随机生成身份；留空保持真实浏览器"></textarea></label>
-            <p class="hint">固定选项保持不变，仅随机标为随机的项目。Safari 仅可搭配 macOS。Chrome 从本机及前两个主版本选择；其他浏览器使用已发布的历史模板，不代表最新版本。平台自动同步，不替换 Chrome 引擎。</p>
           </section>
 
           <!-- 04 字体与隐私 -->
@@ -140,11 +150,19 @@
             <div class="section-head">
               <div><span class="step">04</span><h2>字体与隐私</h2></div>
             </div>
-            <div class="grid">
-              <label class="wide">中文字体探测<select id="fonts"><option value="strict">常见字体白名单+DOM尺寸保护(Claude推荐)</option><option value="normalize">隐藏指定中文字体（保留原回退字体）</option><option value="native">保持原始字体行为</option></select><small>覆盖 Canvas / OffscreenCanvas、DOM 尺寸、FontFace 与枚举。</small></label>
-              <p class="hint wide">Emoji 标识跟随生成的系统身份；不再重绘国旗，实际字形由本机系统决定。</p>
-              <label class="wide switch">阻断 WebRTC 隐私泄露 <input type="checkbox" id="webrtc" role="switch"><span class="toggle-track" aria-hidden="true"></span></label>
-              <p class="hint wide">开启会阻断匹配页面的 WebRTC 连接，语音和视频通话可能不可用。</p>
+            <div class="card-body">
+              <div class="grid">
+                <label class="wide">中文字体探测<select id="fonts"><option value="strict">常见字体白名单+DOM尺寸保护(Claude推荐)</option><option value="normalize">隐藏指定中文字体（保留原回退字体）</option><option value="native">保持原始字体行为</option></select><small>覆盖 Canvas / OffscreenCanvas、DOM 尺寸、FontFace 与枚举。</small></label>
+                <p class="hint wide">Emoji 标识跟随生成的系统身份；不再重绘国旗，实际字形由本机系统决定。</p>
+                <div class="wide">
+                  <label class="switch">
+                    <input type="checkbox" id="webrtc" role="switch">
+                    <span class="toggle-track"></span>
+                    <span>阻断 WebRTC 隐私泄露</span>
+                  </label>
+                </div>
+                <p class="hint wide">开启会阻断匹配页面的 WebRTC 连接，语音和视频通话可能不可用。</p>
+              </div>
             </div>
           </section>
 
@@ -153,12 +171,14 @@
             <div class="section-head">
               <div><span class="step">06</span><h2>目标页面自检</h2></div>
             </div>
-            <p class="hint">保存配置后刷新目标网站，读取实际页面字体、时区与语言。</p>
-            <div class="preset-bar">
-              <button type="button" id="apply-environment" class="outline">一键优化 Claude</button>
-              <button type="button" id="audit-page" class="outline">检测已打开的目标页</button>
+            <div class="card-body">
+              <p class="hint">保存配置后刷新目标网站，读取实际页面字体、时区与语言。</p>
+              <div class="preset-bar">
+                <button type="button" id="apply-environment" class="outline">一键优化 Claude</button>
+                <button type="button" id="audit-page" class="outline">检测已打开的目标页</button>
+              </div>
+              <pre id="audit-output" style="white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5"></pre>
             </div>
-            <pre id="audit-output" style="white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5"></pre>
           </section>
         </div>
       </div>
