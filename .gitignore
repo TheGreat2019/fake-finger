@@ -1,0 +1,17 @@
+# 测试与截图产物
+.qa/
+*.zip
+
+# 系统与编辑器文件
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# 依赖与日志（如有）
+node_modules/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
