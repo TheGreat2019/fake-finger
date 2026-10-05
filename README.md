@@ -1,6 +1,6 @@
 # 浏览器伪装大师 (Browser Disguise Master)
 
-[![Version](https://img.shields.io/badge/version-1.5.1-black?style=flat-square)](manifest.json)
+[![Version](https://img.shields.io/badge/version-1.5.2-black?style=flat-square)](manifest.json)
 [![Manifest](https://img.shields.io/badge/manifest-v3-black?style=flat-square)](manifest.json)
 [![UI Style](https://img.shields.io/badge/UI-Bento%20Grayscale%20Wireframe-black?style=flat-square)](style.css)
 [![Chrome](https://img.shields.io/badge/Chrome-135+-black?style=flat-square)](https://www.google.com/chrome/)
@@ -17,21 +17,21 @@
 
 ---
 
-## ⚡ v1.5.1 界面与体验升级亮点
+## ⚡ v1.5.2 核心修复与排版居中优化
 
-### 1. 模块黑底白字标题栏与白底内容区
-- **Bento 便当盒视觉层次**：各个功能模块卡片（作用范围、地区语言、浏览器身份、字体隐私等）顶部统一采用**深黑曜石炭黑底色（`#18181b`）搭配清晰白字标题**；模块内部内容区采用**纯净白底（`#ffffff`）**，黑白分明，模块边界一目了然。
-- **直角形状波动开关（Toggle Switch）**：WebRTC 阻断、规则启用、模拟位置还原为经典的**直角滑动波动开关**，直角矩形轨道与滑块配备平滑物理滑移动效，开关状态反馈明确。
+### 1. 紧急通信与数据载入修复
+- **Service Worker 模块解析修复**：修复 `version.js` 中缺省的 `MODE_VALUES` 导出问题，彻底解决 Background Service Worker 启动失败导致的后台通信中断、规则看似丢失的问题。
+- **弹窗跳转与容错加强**：Popup 弹窗的“配置此域名”和“打开规则管理”按钮采用直接标签页创建机制，彻底杜绝后台未准备完毕时点击无反应的情况；同时增加 `chrome.storage.local` 本地直接读取兜底，保障无论何时打开均可即时显示已存规则。
 
-### 2. 黑白灰舒适层次与柔和精细阴影
-- **消除刺眼反差**：将画布背景升级为柔和的锌灰色（`#f4f4f5`），正文采用深炭灰（`#18181b`）与石板灰（`#71717a`），彻底解决纯黑纯白极端反差导致的眩光与视觉疲劳。
-- **精细微阴影与微动效**：模块卡片加入平滑微阴影（`box-shadow`）与悬停微抬起动效；按钮支持 Hover 变色与 Active 按压物理位移，交互扎实自然。
-- **严格直角几何语言**：全局保持无圆角（`0px Radius`）硬朗线框美学，工整克制。
+### 2. 页面居中对称排版与视觉平衡
+- **告别居左偏斜**：重构画板为 `main-wrap` 水平居中容器，在各类 1080P、2K、4K 宽屏显示器下保持左右留白对称平衡，布局舒展沉稳。
+- **模块标题高度像素级一致**：所有 Bento 功能卡片标题栏统一锁定为 **42px 严格等高**，标题与右侧标签/波动开关实现两列卡片水平基线绝对对齐，彻底消除高低错落的不协调感。
 
-### 3. 左侧规则列表与清晰选中态
-- **「已启用」小字高亮可见**：重构左侧规则列表卡片结构，选中状态（黑底高亮）下，域名显示为白字，状态指示标签自动切换为**高对比度白底黑字药丸徽标**，彻底解决选中时小字难以辨识的问题。
-- **精简界面层次**：去除多余的虚构“工作空间”层级，规范统一为清爽高效的「规则管理页」。
-- **清爽页眉**：去除冗余的“界面 / 后台”版本字样，保留干净极简的版本标识。
+### 3. Bento Grayscale 黑白灰高级线框风格
+- **黑底白字标题栏 + 纯白内容区**：模块顶部采用深炭黑（`#18181b`）白字标题，内容区采用白底（`#ffffff`），Bento 便当盒边界层次分明。
+- **直角形状波动开关**：WebRTC 阻断与模拟位置采用经典的直角矩形波动开关（Toggle Switch），平滑滑移动效，状态明确。
+- **柔和层次消除刺眼眩光**：画布采用柔和锌灰底色（`#f4f4f5`），正文采用深炭灰（`#18181b`）与石板灰（`#71717a`），搭配精细微阴影（`box-shadow`），阅读舒适耐看。
+- **左侧规则高亮优化**：重构左侧规则列表卡片项，选中状态（黑底高亮）下，域名显示为白字，状态指示标签自动转换为高对比度白底黑字药丸徽标，无论选中与否都清晰锐利。
 
 ### 4. 底层高性能架构保障
 - **消除 DOM 测量强制回流（Reflow Bypass）**：重构字体探测防护底层，避免循环测量触发引擎强制布局（Forced Synchronous Layout），测量耗时从 11ms 降低至 0.05ms 以内，彻底告别页面卡顿。
@@ -156,7 +156,7 @@ git push -u origin master
 
 ```text
 fake-finger/
-├── manifest.json         # Chrome MV3 扩展清单规范与权限声明 (v1.5.1)
+├── manifest.json         # Chrome MV3 扩展清单规范与权限声明 (v1.5.2)
 ├── background.js         # 后台 Service Worker（规则分发、网络请求头、数据清理）
 ├── core.js               # 核心业务逻辑（时区计算、夏令时模型、域名规范化）
 ├── inject.js             # 页面沙箱注入脚本（时区拦截、Navigator伪装、字体保护）

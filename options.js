@@ -393,13 +393,22 @@ $('retry').onclick = async () => {
 };
 
 async function load() {
-  const r = await send({type: 'status'});
-  profiles = r.profiles;
-  checkBackend(r);
-  $('api-warning').hidden = r.scriptsAvailable;
-  if (r.lastError) notice(`上次恢复配置时出现问题：${r.lastError}`, true);
-  renderList();
-  return r;
+  try {
+    const r = await send({type: 'status'});
+    profiles = r.profiles || [];
+    checkBackend(r);
+    $('api-warning').hidden = r.scriptsAvailable;
+    if (r.lastError) notice(`上次恢复配置时出现问题：${r.lastError}`, true);
+    renderList();
+    return r;
+  } catch (err) {
+    // 关键容错：若后台通信异常，立即读取本地 storage 中的已有规则，保证用户规则绝对不丢失！
+    const local = await chrome.storage.local.get(['profiles', 'lastError']);
+    profiles = local?.profiles || [];
+    renderList();
+    notice(`后台服务正在连接：${err.message}`, true);
+    return {profiles, scriptsAvailable: true};
+  }
 }
 
 try {

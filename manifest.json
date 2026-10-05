@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "浏览器伪装大师",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "按域名配置时区、语言、Intl、字体探测、UA、WebRTC 与模拟位置。",
   "minimum_chrome_version": "135",
   "permissions": ["storage", "userScripts", "declarativeNetRequestWithHostAccess", "activeTab"],

@@ -1,12 +1,12 @@
 /* 
- * 浏览器伪装大师 · Bento Grid 黑白灰舒适线框风格 (v1.5.1)
- * 规范：模块标题黑底白字、内容区白底、直角波动开关、柔和黑白灰层次、精细阴影与微动效
+ * 浏览器伪装大师 · Bento Grayscale 黑白灰高级线框风格 (v1.5.2)
+ * 特性：模块标题黑底白字高一致性对齐、主体白底居中排版、直角波动开关、精细微阴影与触觉微动效
  */
 
 :root {
   color-scheme: light;
   
-  /* 柔和黑白灰色彩系统：告别刺眼强光，提升易读性 */
+  /* 柔和黑白灰层次色系：告别刺眼眩光，强化舒适可读性 */
   --bg: #f4f4f5;               /* 画布底色：柔和锌灰 */
   --surface: #ffffff;          /* 模块白底卡片 */
   --surface-header: #18181b;   /* 模块标题栏黑底（沉稳炭黑，不刺眼） */
@@ -20,10 +20,10 @@
   --border-medium: #d4d4d8;    /* 控件常规边框 */
   --border-dark: #18181b;      /* 强聚焦边框 */
   
-  /* 精细阴影分级 */
+  /* 分级精细阴影 */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(0, 0, 0, 0.02);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.03);
   
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
@@ -37,7 +37,7 @@
 
 * {
   box-sizing: border-box;
-  border-radius: 0 !important; /* 严格直角造型 */
+  border-radius: 0 !important; /* 全局严格直角 */
 }
 
 body {
@@ -53,7 +53,7 @@ button, input, select, textarea {
   border-radius: 0;
 }
 
-/* 按钮基础与动效 */
+/* 按钮基础与微动效 */
 button {
   cursor: pointer;
   border: 1px solid var(--border-medium);
@@ -156,15 +156,19 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   }
 }
 
-/* 全局工作台双列画板布局 */
+/* 全局工作台整体布局：居中画板设计 (v1.5.2) */
 .workspace {
-  display: grid;
-  grid-template-columns: 240px 1fr;
+  display: flex;
   min-height: 100vh;
+  width: 100%;
+  background: var(--bg);
 }
 
-/* 左侧独立侧边栏 */
+/* 左侧固定侧边栏 */
 aside {
+  width: 250px;
+  min-width: 250px;
+  max-width: 250px;
   background: #ffffff;
   border-right: 1px solid var(--border-light);
   box-shadow: var(--shadow-xs);
@@ -175,6 +179,30 @@ aside {
   top: 0;
   height: 100vh;
   z-index: 10;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+/* 主内容包裹层：在剩余区域内完美水平居中 */
+.main-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px 32px 36px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+/* 主内容区域：固定最大宽度居中对齐，左右留白对称平衡 */
+main {
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
 /* 品牌标识 */
@@ -259,7 +287,7 @@ aside {
   background: var(--border-medium);
 }
 
-/* 域名卡片列表项 (Requirement 4) */
+/* 域名规则列表项卡片 (v1.5.2) */
 .profile-item {
   display: flex;
   flex-direction: column;
@@ -330,7 +358,7 @@ aside {
   white-space: nowrap;
 }
 
-/* 关键高亮：选中状态下黑底，域名与小字均高度清晰！ (Requirement 4) */
+/* 选中高亮状态：小字药丸徽标白底黑字，高度清晰锐利 */
 .profile-item.selected {
   background: #18181b !important;
   border-color: #18181b !important;
@@ -397,15 +425,6 @@ aside {
   height: 6px;
   background: var(--ink-primary);
   margin-right: 4px;
-}
-
-/* 主内容区域 */
-main {
-  padding: 16px 22px 14px;
-  max-width: 1200px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
 }
 
 /* 顶部页眉 */
@@ -519,15 +538,19 @@ header p {
   box-shadow: var(--shadow-md);
 }
 
-/* 模块标题栏：黑底白字 (Requirement 1) */
+/* 模块标题栏：黑底白字，严格锁定高度为 42px，两列绝对对齐 (v1.5.2) */
 .section-head {
   background: var(--surface-header);
   color: var(--surface-header-text);
-  padding: 8px 12px;
+  padding: 0 14px;
+  height: 42px;
+  min-height: 42px;
+  max-height: 42px;
+  box-sizing: border-box;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   border-bottom: 1px solid var(--surface-header);
 }
 
@@ -535,47 +558,68 @@ header p {
   display: flex;
   align-items: center;
   gap: 8px;
+  height: 100%;
 }
 
 .section-head h2 {
   color: #ffffff;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 700;
   margin: 0;
+  line-height: 1;
   letter-spacing: 0.2px;
+  display: flex;
+  align-items: center;
 }
 
-/* 步骤序号编号块 */
+/* 步骤编号 */
 .section-head .step {
   color: #18181b;
   background: #ffffff;
   border: 1px solid #ffffff;
-  font: 10.5px var(--font-mono);
+  font: 11px var(--font-mono);
   font-weight: 800;
-  padding: 1px 6px;
-  line-height: 1.25;
+  padding: 2px 6px;
+  line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
 }
 
-/* 标题栏右侧标签 */
+/* 标题栏标签：统一定高与边框 */
 .section-head .tag {
   color: #f4f4f5;
   background: rgba(255, 255, 255, 0.14);
   border: 1px solid rgba(255, 255, 255, 0.28);
-  font-size: 10px;
+  font-size: 10.5px;
   font-weight: 500;
-  padding: 1px 6px;
+  padding: 2px 7px;
+  line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
 }
 
-/* 模块内容区：白底 (Requirement 1) */
+/* 标题栏内的波动开关 */
+.section-head .switch {
+  color: #ffffff !important;
+  font-size: 11.5px;
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  height: 100%;
+  white-space: nowrap;
+}
+
+/* 模块内容区：白底 */
 .card-body {
-  padding: 12px 14px;
+  padding: 13px 15px;
   background: #ffffff;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-/* 直角形状的波动开关 (Requirement 2) */
+/* 直角形状的波动开关 (Toggle Switch) */
 .switch {
   display: inline-flex !important;
   align-items: center;
@@ -642,10 +686,6 @@ header p {
 }
 
 /* 标题栏黑底内的直角波动开关适配 */
-.section-head .switch {
-  color: #ffffff !important;
-}
-
 .section-head .toggle-track {
   background-color: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.45);
@@ -896,7 +936,7 @@ footer .primary span {
   margin-left: 6px;
 }
 
-/* 浏览器弹窗 Popup：黑白灰 Bento 风格 (v1.5.1) */
+/* 浏览器弹窗 Popup：黑白灰 Bento 风格 (v1.5.2) */
 .popup {
   width: 340px;
   padding: 12px;
@@ -919,7 +959,10 @@ footer .primary span {
 }
 
 .popup .section-head {
-  padding: 6px 10px;
+  height: 34px;
+  min-height: 34px;
+  max-height: 34px;
+  padding: 0 10px;
   background: var(--surface-header);
 }
 
@@ -978,25 +1021,22 @@ footer .primary span {
 }
 
 /* 响应式断点 */
-@media (max-width: 1000px) {
+@media (max-width: 1080px) {
   .cards-layout {
     grid-template-columns: 1fr;
   }
-  .workspace {
-    grid-template-columns: 210px 1fr;
-  }
-  main {
-    padding: 12px 14px 10px;
-  }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 768px) {
   .workspace {
-    display: block;
+    flex-direction: column;
   }
   aside {
-    position: static;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
     height: auto;
+    position: static;
     border-bottom: 1px solid var(--border-light);
     border-right: none;
     padding: 12px 14px;
@@ -1013,6 +1053,9 @@ footer .primary span {
   .profile-item {
     min-width: 140px;
     margin: 0;
+  }
+  .main-wrap {
+    padding: 14px 16px;
   }
   .grid, .grid.three {
     grid-template-columns: 1fr;
