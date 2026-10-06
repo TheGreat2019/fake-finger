@@ -30,13 +30,13 @@
       <header>
         <div>
           <div class="eyebrow">PRIVACY / DOMAIN PROFILES</div>
-          <h1>让每个站点，看见你选择的环境。<span class="version">v1.5.2</span></h1>
+          <h1>让每个站点，看见你选择的环境。<span class="version">v1.6.0</span></h1>
           <p>将语言、时区与浏览器特征组合为独立的域名配置。</p>
         </div>
       </header>
 
       <div id="version-warning" class="notice warning" hidden>
-        <span><strong>界面与扩展后台版本不一致。</strong>旧后台不认识新版字体或国旗模式，需重载后才能保存。</span>
+        <span><strong>界面与扩展后台版本不一致。</strong>请重载扩展后再保存配置。</span>
         <button type="button" id="reload-extension" class="outline">保存草稿并重载扩展</button>
       </div>
 
@@ -55,7 +55,7 @@
             <section class="card">
               <div class="section-head">
                 <div><span class="step">01</span><h2>作用范围</h2></div>
-                <label class="switch"><input type="checkbox" id="enabled" checked role="switch"><span class="toggle-track"></span><span>启用此规则</span></label>
+                <label class="switch" title="启用或停用此规则"><input type="checkbox" id="enabled" checked role="switch" aria-label="启用此规则"><span class="toggle-track" aria-hidden="true"></span></label>
               </div>
               <div class="card-body">
                 <div class="grid">
@@ -94,7 +94,7 @@
             <section class="card">
               <div class="section-head">
                 <div><span class="step">05</span><h2>模拟浏览器位置</h2></div>
-                <label class="switch"><input type="checkbox" id="locationEnabled" role="switch"><span class="toggle-track"></span><span>启用模拟位置</span></label>
+                <label class="switch"><input type="checkbox" id="locationEnabled" role="switch"><span class="toggle-track"></span><span>模拟位置</span></label>
               </div>
               <div class="card-body">
                 <div class="grid three">
@@ -138,11 +138,11 @@
                   <label class="wide">浏览器版本<select id="identityVersion"><option value="random">随机兼容版本</option><option value="preferred">优先版本（减少版本变化）</option></select></label>
                 </div>
                 <button type="button" id="native-identity" class="outline full">使用真实浏览器身份（减少身份矛盾）</button>
-                <p class="hint">保留浏览器原生 UA、平台、版本和 Client Hints，可消除本扩展修改身份造成的部分不一致。不会隐藏真实系统，也不保证通过全部检测。</p>
+                <p class="hint">原生身份减少 UA 与内核矛盾；真实系统仍可被读取。</p>
                 <button type="button" id="random-ua" class="outline full">⤨ 一键随机身份（可能被识别）</button>
                 <p id="identity-summary" class="hint"></p>
                 <label>User-Agent<textarea id="ua" rows="3" readonly placeholder="点击一键随机生成身份；留空保持真实浏览器"></textarea></label>
-                <p class="hint">固定选项保持不变，仅随机标为随机的项目。Safari 仅可搭配 macOS。Chrome 从本机及前两个主版本选择；其他浏览器使用已发布的历史模板，不代表最新版本。平台自动同步，不替换 Chrome 引擎。</p>
+                <details class="inline-help"><summary>身份生成规则与限制</summary><p class="hint">固定项保持不变；Safari 仅搭配 macOS。Chrome 使用本机及前两个主版本，其他浏览器使用历史模板。平台自动同步，不替换浏览器引擎。</p></details>
               </div>
             </section>
 
@@ -156,7 +156,7 @@
                 <div class="grid">
                   <label class="wide">中文字体探测<select id="fonts"><option value="strict">常见字体白名单+DOM尺寸保护(Claude推荐)</option><option value="normalize">隐藏指定中文字体（保留原回退字体）</option><option value="native">保持原始字体行为</option></select><small>覆盖 Canvas / OffscreenCanvas、DOM 尺寸、FontFace 与枚举。</small></label>
                   <p class="hint wide">Emoji 标识跟随生成的系统身份；不再重绘国旗，实际字形由本机系统决定。</p>
-                  <div class="wide">
+                  <div class="wide privacy-toggle">
                     <label class="switch">
                       <input type="checkbox" id="webrtc" role="switch">
                       <span class="toggle-track"></span>

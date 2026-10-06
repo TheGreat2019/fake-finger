@@ -10,28 +10,7 @@ let cleanPreview=null;
 function resetCleanPreview(){cleanPreview=null;$('clear-site-data').hidden=true;$('clean-output').textContent='';}
 const fields = Object.keys(defaultProfile());
 
-// Add click ripple feedback to any button or interactive element
-function addRipple(e) {
-  const target = e.currentTarget;
-  if (!target || target.disabled) return;
-  const rect = target.getBoundingClientRect();
-  const circle = document.createElement('span');
-  const d = Math.max(rect.width, rect.height);
-  circle.style.width = circle.style.height = `${d}px`;
-  circle.style.left = `${e.clientX - rect.left - d / 2}px`;
-  circle.style.top = `${e.clientY - rect.top - d / 2}px`;
-  circle.className = 'ripple';
-  const existing = target.querySelector('.ripple');
-  if (existing) existing.remove();
-  target.appendChild(circle);
-  circle.addEventListener('animationend', () => circle.remove());
-}
-
-document.addEventListener('click', e => {
-  const btn = e.target.closest('button, .profile-item');
-  if (btn) addRipple({ currentTarget: btn, clientX: e.clientX, clientY: e.clientY });
-});
-
+// CSS handles press/hover feedback without inserting ripple nodes.
 // Flash element briefly to provide tactile visual feedback
 function flashField(...elements) {
   for (const el of elements) {

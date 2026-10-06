@@ -1,6 +1,6 @@
 // This module is evaluated separately in the UI and the service worker.
 // Compare loaded code versions, not getManifest(), which can hide stale workers.
-export const BUILD = '1.5.2';
+export const BUILD = '1.6.0';
 
 export const MODE_OPTIONS = {
   fonts: [
