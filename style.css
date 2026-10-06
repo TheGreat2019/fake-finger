@@ -9,8 +9,8 @@
   --accent:#087d70;
   --accent-soft:#e8f5f1;
   --danger:#b44343;
-  font-family:Inter,"Segoe UI","Microsoft YaHei",sans-serif;
-  font-size:13px;
+  font-family:"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif;
+  font-size:15px;
   line-height:1.5;
   color:var(--ink);
   background:var(--bg)}
@@ -111,10 +111,10 @@ aside {
   justify-content:space-between;
   align-items:center;
   color:var(--muted);
-  font-size:12px;
+  font-size:14px;
   margin:0 3px 9px}
 .aside-label span,.version {
-  font-size:11px;
+  font-size:13px;
   border:1px solid var(--line);
   background:#f4f8f7;
   border-radius:5px;
@@ -145,7 +145,7 @@ aside {
   gap:7px;
   align-items:center;
   flex-wrap:wrap;
-  font-size:11px;
+  font-size:13px;
   font-weight:400;
   color:var(--muted);
   margin-top:5px}
@@ -154,7 +154,7 @@ aside {
   border-radius:4px;
   background:#edf2f4;
   color:#667982;
-  font-size:10px}
+  font-size:12px}
 .status-pill.on {
   background:var(--accent-soft);
   color:#096f61}
@@ -163,7 +163,7 @@ aside {
   border-color:#8bbeb3;
   box-shadow:inset 3px 0 var(--accent)}
 .aside-bottom {
-  font-size:11px;
+  font-size:13px;
   color:var(--muted);
   margin-top:13px;
   padding-top:12px;
@@ -197,7 +197,7 @@ header {
   align-items:center;
   margin-bottom:15px}
 .eyebrow {
-  font-size:10px;
+  font-size:12px;
   letter-spacing:1.8px;
   color:var(--accent);
   font-weight:700}
@@ -267,12 +267,12 @@ header p {
 .step {
   color:var(--accent);
   background:var(--accent-soft);
-  font-size:10px;
+  font-size:12px;
   font-weight:750;
   border-radius:4px;
   padding:2px 6px}
 .tag {
-  font-size:10px;
+  font-size:12px;
   color:var(--muted);
   padding:2px 6px;
   background:#edf2f3;
@@ -314,10 +314,10 @@ textarea {
   resize:vertical;
   line-height:1.5;
   font-family:ui-monospace,Consolas,monospace;
-  font-size:11px;
+  font-size:13px;
   min-height:68px}
 small,.hint {
-  font-size:11px;
+  font-size:13px;
   font-weight:400;
   color:var(--muted);
   line-height:1.55}
@@ -347,11 +347,11 @@ small,.hint {
   background:#f4f8f8;
   border:1px dashed #d1e1dd;
   border-radius:6px;
-  font-size:11px}
+  font-size:13px}
 .preview span {
   color:var(--muted)}
 .preview strong {
-  font-size:12px;
+  font-size:14px;
   font-weight:550}
 .preview small {
   margin-left:auto}
@@ -364,7 +364,7 @@ small,.hint {
   background:#f7fafa;
   border:1px solid var(--line);
   border-radius:6px;
-  font-size:12px;
+  font-size:14px;
   cursor:pointer}
 input[type=checkbox] {
   accent-color:var(--accent);
@@ -380,7 +380,7 @@ input[type=checkbox] {
   gap:9px;
   position:relative;
   cursor:pointer;
-  font-size:12px;
+  font-size:14px;
   font-weight:500;
   white-space:nowrap}
 .switch input[type=checkbox] {
@@ -441,7 +441,7 @@ input[type=checkbox] {
   margin-top:0}
 
 .inline-help,.limits {
-  font-size:11px;
+  font-size:13px;
   color:var(--muted)}
 summary {
   cursor:pointer;
@@ -455,7 +455,7 @@ summary {
 pre:empty {
   display:none}
 pre {
-  font-size:11px;
+  font-size:13px;
   color:var(--muted)}
 footer {
   position:sticky;
@@ -472,7 +472,7 @@ footer {
   box-shadow:0 -3px 14px #273b3510;
   z-index:5}
 footer>span {
-  font-size:12px;
+  font-size:14px;
   color:var(--muted)}
 footer>div {
   display:flex;
@@ -508,17 +508,17 @@ to {
 .popup .card-body {
   padding:12px}
 .popup .notice {
-  font-size:11px;
+  font-size:13px;
   margin-bottom:6px;
   padding:7px 9px}
 .popup p {
-  font-size:12px;
+  font-size:14px;
   color:var(--muted);
   margin:7px 0}
 .popup .full {
   margin-top:7px}
 .popup .hint {
-  font-size:11px}
+  font-size:13px}
 .popup h2 {
   overflow-wrap:anywhere}
 
@@ -593,9 +593,11 @@ aside {
 .preset-bar label {
   flex-basis:auto}
 footer>span {
-  display:none}
+  display:block;
+  width:100%}
 footer {
-  justify-content:flex-end}
+  justify-content:flex-end;
+  flex-wrap:wrap}
 .popup {
   width:360px}
 }
@@ -606,3 +608,21 @@ footer {
   transition:none!important;
   scroll-behavior:auto!important}
 }
+
+/* Readable feedback without permanent animation or polling. */
+label:not(.switch):not(.check-box),.field {font-weight:500}
+input:not([type=checkbox]),select,textarea {font-weight:400;min-height:40px}
+.section-head h2 {font-size:16px}
+.preset-bar {flex-wrap:wrap}
+.optimization-result {margin-top:14px;padding:14px;background:var(--accent-soft);border:1px solid #b4d9cf;border-radius:8px;overflow-wrap:anywhere}
+.optimization-result ul {padding:0;list-style:none;margin:10px 0}
+.optimization-result li {margin:6px 0}
+.optimization-result p {font-size:13px;margin-bottom:0;color:#41695f}
+#save-note.dirty {color:#925e12;font-weight:600}
+footer {flex-wrap:wrap}
+footer>div {display:flex;gap:8px;flex-wrap:wrap}
+dialog {max-width:min(520px,calc(100vw - 32px));border:1px solid var(--line);border-radius:12px;padding:24px;color:var(--ink);box-shadow:0 18px 70px #20313933}
+dialog::backdrop {background:#20313966}
+dialog h2 {font-size:20px;margin-top:0}
+.dialog-actions {display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:20px}
+#dialog-error {color:var(--danger)}

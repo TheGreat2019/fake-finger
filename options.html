@@ -30,7 +30,7 @@
       <header>
         <div>
           <div class="eyebrow">PRIVACY / DOMAIN PROFILES</div>
-          <h1>让每个站点，看见你选择的环境。<span class="version">v1.6.0</span></h1>
+          <h1>让每个站点，看见你选择的环境。<span class="version">v1.7.0</span></h1>
           <p>将语言、时区与浏览器特征组合为独立的域名配置。</p>
         </div>
       </header>
@@ -177,9 +177,10 @@
               <div class="card-body">
                 <p class="hint">保存配置后刷新目标网站，读取实际页面字体、时区与语言。</p>
                 <div class="preset-bar">
-                  <button type="button" id="apply-environment" class="outline">一键优化 Claude</button>
+                  <button type="button" id="apply-environment" class="outline">✨ 一键优化 Claude</button>
                   <button type="button" id="audit-page" class="outline">检测已打开的目标页</button>
                 </div>
+                <div id="optimization-result" class="optimization-result" role="status" aria-live="polite" hidden></div>
                 <pre id="audit-output" style="white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5"></pre>
               </div>
             </section>
@@ -193,8 +194,9 @@
         </details>
 
         <footer>
-          <span id="save-note">保存后，请刷新目标网页。</span>
+          <span id="save-note" role="status" aria-live="polite">保存后，请刷新目标网页。</span>
           <div>
+            <button type="button" id="discard" class="outline" hidden>丢弃改动</button>
             <button type="button" id="delete" class="danger" hidden>删除规则</button>
             <button type="submit" class="primary" id="save" disabled>保存域名配置 <span>↗</span></button>
           </div>
@@ -203,6 +205,16 @@
     </main>
   </div>
 </div>
+<dialog id="unsaved-dialog" aria-labelledby="unsaved-title">
+  <h2 id="unsaved-title">📝 当前配置尚未保存</h2>
+  <p>切换前请选择保存配置，或丢弃本次改动。</p>
+  <p id="dialog-error" role="alert"></p>
+  <div class="dialog-actions">
+    <button type="button" id="leave-cancel" autofocus>继续编辑</button>
+    <button type="button" id="leave-discard" class="danger">丢弃并继续</button>
+    <button type="button" id="leave-save" class="primary">保存并继续</button>
+  </div>
+</dialog>
 <script type="module" src="options.js"></script>
 </body>
 </html>

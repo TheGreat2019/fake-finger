@@ -7,6 +7,35 @@ const $ = id => document.getElementById(id);
 let identityState={platform:'Win32',uaPlatform:'Windows',emoji:'native'};
 let profiles = [], currentDomain = null, backendReady = false, saving = false;
 let cleanPreview=null;
+let baseline=null, dirty=false, pendingNavigation=null, ipBusy=false, allowUnload=false;
+const snapshot=()=>JSON.stringify(readDraft());
+function syncDirty(){
+  dirty=baseline!==null && snapshot()!==JSON.stringify(baseline);
+  $('discard').hidden=!dirty;
+  $('save-note').textContent=dirty?'📝 有未保存的改动，请保存或丢弃。':currentDomain?'✓ 当前配置已保存；生效前请刷新目标页。':'填写配置后保存，规则才会生效。';
+  $('save-note').classList.toggle('dirty',dirty);
+}
+function navigate(action){
+  if(saving||ipBusy){notice('正在处理，请稍后再切换规则。',true);return;}
+  if(!dirty){action();return;}
+  pendingNavigation=action;
+  $('unsaved-dialog').showModal();
+}
+function changed(){syncDirty();$('optimization-result').hidden=true;}
+window.addEventListener('beforeunload',event=>{
+  if((dirty||saving)&&!allowUnload){event.preventDefault();event.returnValue='';}
+});
+$('discard').onclick=()=>{if(saving||ipBusy)return;fill(baseline);notice('已丢弃改动，恢复至编辑前的配置。');};
+$('leave-cancel').onclick=()=>{$('unsaved-dialog').close();pendingNavigation=null;};
+$('leave-discard').onclick=()=>{const next=pendingNavigation;pendingNavigation=null;$('unsaved-dialog').close();next?.();};
+$('leave-save').onclick=async()=>{
+  $('leave-save').disabled=true;
+  try{if(await saveProfile()){const next=pendingNavigation;pendingNavigation=null;$('unsaved-dialog').close();next?.();}
+  else $('dialog-error').textContent=$('status').textContent;}
+  finally{$('leave-save').disabled=false;}
+};
+$('unsaved-dialog').addEventListener('cancel',event=>{if(saving)event.preventDefault();});
+$('unsaved-dialog').addEventListener('close',()=>{$('dialog-error').textContent='';});
 function resetCleanPreview(){cleanPreview=null;$('clear-site-data').hidden=true;$('clean-output').textContent='';}
 const fields = Object.keys(defaultProfile());
 
@@ -19,16 +48,6 @@ function flashField(...elements) {
     void el.offsetWidth;
     el.classList.add('field-flash');
   }
-}
-
-// Flash button text briefly to confirm action
-function flashButton(btn, tempText, duration = 1200) {
-  if (!btn) return;
-  const original = btn.innerHTML;
-  btn.innerHTML = tempText;
-  setTimeout(() => {
-    btn.innerHTML = original;
-  }, duration);
 }
 
 async function send(message) {
@@ -77,6 +96,9 @@ function fill(p) {
   updateIdentityChoices();
   preview();
   renderList();
+  baseline=readDraft();
+  syncDirty();
+  $('optimization-result').hidden=true;
 }
 
 function readDraft() {
@@ -143,11 +165,11 @@ function renderList() {
     small.append(desc);
 
     b.append(small);
-    b.onclick = () => {
-      fill(p);
+    b.onclick = () => navigate(() => {
+      fill(profiles.find(item=>item.domain===p.domain)||p);
       flashField($('domain'), $('timezone'), $('locale'), $('ua'));
       notice('已载入配置。修改并保存后，请刷新目标页。');
-    };
+    });
     $('profiles').append(b);
   }
 }
@@ -159,7 +181,8 @@ $('profile-search')?.addEventListener('input', () => {
   }
 });
 
-$('editor').addEventListener('input',resetCleanPreview);
+$('editor').addEventListener('input',()=>{resetCleanPreview();changed();});
+$('editor').addEventListener('change',changed);
 $('preview-clean').onclick=async()=>{
   resetCleanPreview();
   const domain=currentDomain;
@@ -228,6 +251,7 @@ $('native-identity').onclick=()=>{
   $('identityOS').value='random';$('identityBrowser').value='random';
   updateIdentityChoices();
   $('identity-summary').textContent='原生身份：不改写 UA、平台、厂商、Client Hints 或身份请求头';
+  changed();
   notice('已恢复原生身份。保存后重新加载目标页面；其他隐私配置保留。真实系统信息将可被网站读取。');
 };
 $('random-ua').onclick=()=>{
@@ -235,21 +259,43 @@ $('random-ua').onclick=()=>{
     const result=generateIdentity(navigator.userAgent,{os:$('identityOS').value,browser:$('identityBrowser').value,strategy:$('identityVersion').value});
     identityState={platform:result.platform,uaPlatform:result.uaPlatform,emoji:'native'};
     $('ua').value=result.ua;$('identity-summary').textContent=result.identitySummary;
+    changed();
     notice('已生成匹配的系统、浏览器与版本。保存后固定生效。');
   }catch(e){notice(e.message,true);}
 };
 
-$('apply-environment').onclick = () => {
-  $('timezone').value = 'America/Los_Angeles';
-  $('locale').value = 'en-US';
-  $('languages').value = 'en-US, en';
-  $('fonts').value = 'strict';
-  $('webrtc').checked = true;
-  preview();
-  flashField($('timezone'), $('locale'), $('languages'), $('fonts'), $('webrtc'));
-  flashButton($('apply-environment'), '✓ 已应用配置');
-  notice('已填写英文、美西时区、字体保护与 WebRTC 阻断；保留当前系统和浏览器身份。核对位置是否一致后保存。');
-};
+async function matchIP(optimize=false){
+  if(ipBusy||saving)return;
+  ipBusy=true;
+  const initial=snapshot();
+  const button=$(optimize?'apply-environment':'match-ip'), text=button.textContent;
+  $('apply-environment').disabled=$('match-ip').disabled=true;
+  button.textContent='⟳ 正在匹配 IP…';
+  try{
+    if(!await chrome.permissions.request({origins:['https://ipwho.is/*']}))throw new Error('IP 查询访问权限未授予，配置未修改。');
+    const r=await send({type:'ip'});
+    if(snapshot()!==initial)throw new Error('查询期间表单已修改，本次结果未填入，请重试。');
+    if(!r.profile.regionKnown)throw new Error('该 IP 地区暂无语言预设，请手动设置；本次未修改配置。');
+    const update={...readDraft(),...Object.fromEntries(['timezone','locale','languages','latitude','longitude','accuracy','locationEnabled'].map(key=>[key,r.profile[key]]))};
+    if(optimize)Object.assign(update,{ua:'',identityOS:'random',identityBrowser:'random',identityVersion:'random',fonts:'strict',webrtc:'block',enabled:true});
+    validateProfile(update);
+    const previousBaseline=baseline;
+    fill(update);baseline=previousBaseline;syncDirty();
+    flashField(...['timezone','locale','languages','latitude','longitude','fonts','ua'].map($));
+    const result=$('optimization-result');
+    result.replaceChildren();
+    const title=document.createElement('strong');title.textContent=`📍 ${r.ip} · ${r.country||''} ${r.city||''}`;result.append(title);
+    const list=document.createElement('ul');
+    const items=[`✓ 地区与语言：${update.timezone} · ${update.languages.join(', ')}`,`✓ 已开启模拟位置：${update.latitude}, ${update.longitude}（精度 ${update.accuracy} 米）`];
+    if(optimize)items.push('✓ 使用真实浏览器身份（UA 与 Client Hints）','✓ 阻断 WebRTC 连接','✓ 中文字体白名单 + DOM 尺寸保护','✓ 已启用此域名规则');
+    for(const text of items){const item=document.createElement('li');item.textContent=text;list.append(item);}
+    result.append(list);const hint=document.createElement('p');hint.textContent='已填入表单，请核对后保存。IP 位置为近似值，语言来自国家预设。';result.append(hint);result.hidden=false;
+    if(optimize)result.scrollIntoView({block:'nearest',behavior:'instant'});
+    notice(optimize?'✨ Claude 优化已填入，下方列出了全部改动。保存并刷新目标网站后生效。':'📍 已按当前 IP 填入地区、语言和位置，请核对后保存。');
+  }catch(e){notice(e.message,true);}
+  finally{ipBusy=false;$('apply-environment').disabled=$('match-ip').disabled=false;button.textContent=text;}
+}
+$('apply-environment').onclick=()=>matchIP(true);
 
 $('audit-page').onclick = async () => {
   $('audit-page').disabled = true;
@@ -272,17 +318,20 @@ $('audit-page').onclick = async () => {
 $('timezone').oninput = preview;
 $('locale').oninput = preview;
 
-$('new').onclick = () => {
+$('new').onclick = () => navigate(() => {
   fill(defaultProfile());
   flashField($('domain'));
   notice('新规则只在保存并授权后生效。');
   $('domain').focus();
-};
+});
 
-$('editor').onsubmit = async event => {
-  event.preventDefault();
-  if (saving) return;
+$('editor').onsubmit = event => {event.preventDefault();saveProfile();};
+async function saveProfile(){
+  if(saving||ipBusy)return false;
+  if(!$('editor').reportValidity()){notice('请完整填写有效的域名、地区和位置后保存。',true);return false;}
+  const initial=snapshot();
   saving = true;
+  for(const id of ['discard','leave-cancel','leave-discard','domain'])$(id).disabled=true;
   $('save').disabled = true;
   const originalSaveText = $('save').innerHTML;
   $('save').innerHTML = '⟳ 保存中…';
@@ -293,15 +342,18 @@ $('editor').onsubmit = async event => {
     if (!checkBackend(await send({type: 'status'}))) throw new Error('后台版本已发生变化，请保存草稿并重载扩展。');
     const r = await send({type: 'save', profile});
     profiles = r.profiles;
-    fill(profile);
-    notice('配置已保存并注册。请刷新目标网页，使新配置生效。');
-    await chrome.storage.local.remove('editorDraft');
-    $('save').textContent = '保存域名配置 ↗';
+    if(snapshot()===initial)fill(profile);
+    else {baseline=JSON.parse(initial);currentDomain=profile.domain;$('domain').readOnly=true;$('delete').hidden=false;renderList();syncDirty();}
+    notice(dirty?'✅ 已保存提交时的配置；后续改动仍未保存。':'✅ 配置已保存并注册。请刷新目标网页，使新配置生效。');
+    chrome.storage.local.remove('editorDraft').catch(()=>{});
+    return !dirty;
   } catch (error) {
     notice(error.message, true);
     $('save').innerHTML = originalSaveText;
+    return false;
   } finally {
     saving = false;
+    for(const id of ['discard','leave-cancel','leave-discard','domain'])$(id).disabled=false;
     $('save').disabled = !backendReady;
     $('save').textContent = '保存域名配置 ↗';
   }
@@ -312,6 +364,7 @@ $('reload-extension').onclick = async () => {
   try {
     await chrome.storage.local.set({editorDraft: {profile: readDraft(), reopen: true, savedAt: Date.now()}});
     notice('草稿已保存，正在重载扩展；设置页将重新打开并恢复表单。');
+    allowUnload=true;
     chrome.runtime.reload();
   } catch (e) {
     notice(`无法自动重载：${e.message}。请在 chrome://extensions 手动重载，再打开设置页恢复草稿。`, true);
@@ -320,7 +373,8 @@ $('reload-extension').onclick = async () => {
 };
 
 $('delete').onclick = async () => {
-  if (!currentDomain) return;
+  if (!currentDomain||saving||ipBusy) return;
+  if(!confirm('删除当前域名规则？未保存的改动也将丢弃。'))return;
   $('delete').disabled = true;
   try {
     const r = await send({type: 'delete', domain: currentDomain});
@@ -334,32 +388,7 @@ $('delete').onclick = async () => {
   }
 };
 
-$('match-ip').onclick = async () => {
-  $('match-ip').disabled = true;
-  const originalMatchText = $('match-ip').innerHTML;
-  $('match-ip').innerHTML = '⟳ 查询中…';
-  try {
-    if (!await chrome.permissions.request({origins: ['https://ipwho.is/*']})) throw new Error('IP 查询访问权限未授予。');
-    notice('正在查询当前出口 IP…');
-    const r = await send({type: 'ip'});
-    for (const [key, value] of Object.entries(r.profile)) {
-      const el = $(key);
-      if (!el) continue;
-      if (el.type === 'checkbox') el.checked = value;
-      else el.value = Array.isArray(value) ? value.join(', ') : value;
-    }
-    preview();
-    flashField($('timezone'), $('locale'), $('languages'), $('latitude'), $('longitude'), $('accuracy'));
-    $('match-ip').textContent = '◎ 根据当前 IP 匹配';
-    notice(`已匹配 ${r.ip} · ${r.country || ''} ${r.city || ''}。请核对语言和位置后保存。${r.profile.regionKnown ? '' : '该地区暂无语言预设，暂填英语，请手动调整。'}`);
-  } catch (e) {
-    notice(e.message, true);
-    $('match-ip').innerHTML = originalMatchText;
-  } finally {
-    $('match-ip').disabled = false;
-    $('match-ip').textContent = '◎ 根据当前 IP 匹配';
-  }
-};
+$('match-ip').onclick=()=>matchIP();
 
 $('retry').onclick = async () => {
   try {
@@ -397,7 +426,9 @@ try {
   fill(p || {...defaultProfile(), domain: host || ''});
   const {editorDraft} = await chrome.storage.local.get('editorDraft');
   if (editorDraft?.profile && (!host || host === editorDraft.profile.domain)) {
-    fill(editorDraft.profile);
+    fill(profiles.find(p=>p.domain===editorDraft.profile.domain)||{...defaultProfile(),domain:editorDraft.profile.domain});
+    const savedBaseline=baseline;
+    fill(editorDraft.profile);baseline=savedBaseline;syncDirty();
     notice('已恢复重载前的草稿。请核对后点击保存，尚未自动应用。');
   }
 } catch (e) {
