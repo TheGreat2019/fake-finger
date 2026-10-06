@@ -30,7 +30,7 @@
       <header>
         <div>
           <div class="eyebrow">PRIVACY / DOMAIN PROFILES</div>
-          <h1>让每个站点，看见你选择的环境。<span class="version">v1.7.0</span></h1>
+          <h1>让每个站点，看见你选择的环境。<span class="version">v1.7.1</span></h1>
           <p>将语言、时区与浏览器特征组合为独立的域名配置。</p>
         </div>
       </header>
@@ -154,7 +154,7 @@
               </div>
               <div class="card-body">
                 <div class="grid">
-                  <label class="wide">中文字体探测<select id="fonts"><option value="strict">常见字体白名单+DOM尺寸保护(Claude推荐)</option><option value="normalize">隐藏指定中文字体（保留原回退字体）</option><option value="native">保持原始字体行为</option></select><small>覆盖 Canvas / OffscreenCanvas、DOM 尺寸、FontFace 与枚举。</small></label>
+                  <label class="wide">中文字体探测<select id="fonts"><option value="strict">常见字体白名单 + 轻量 DOM 保护（推荐）</option><option value="normalize">仅隐藏指定中文字体（不处理 DOM 尺寸）</option><option value="native">保持原始字体行为</option></select><small>保护 Canvas / OffscreenCanvas、FontFace 与枚举；DOM 仅隔离测量短文本、内联字体和绝对/固定定位的探测元素，普通布局直接使用原生接口。</small></label>
                   <p class="hint wide">Emoji 标识跟随生成的系统身份；不再重绘国旗，实际字形由本机系统决定。</p>
                   <div class="wide privacy-toggle">
                     <label class="switch">
@@ -190,7 +190,7 @@
         <details class="limits">
           <summary>覆盖范围与使用限制</summary>
           <p>生效于 HTTP / HTTPS 匹配域名的文档与独立匹配的子框架。修改后请重新加载目标页；关闭规则也需要重新加载。Worker、Service Worker、未匹配的跨域 iframe、about:blank / srcdoc、新窗口的极早期同步探测、浏览器内部页不在完整覆盖范围内。</p>
-          <p>字体处理覆盖常见 DOM 尺寸接口和本页字体枚举，但不能完整覆盖 SVG、跨上下文或所有系统渠道；Emoji 保留本机字形，系统身份不改变真实渲染。Date 的非标准字符串解析、极端历史年份可能仍保留真实环境特征。网页可以识别 JavaScript 改写，不能保证通过所有指纹检测。请求头只修改发往配置域名的请求，不修改发往其他域名的第三方请求。</p>
+          <p>轻量 DOM 保护不覆盖纯样式表字体、容器、内联固定宽高、变换元素及 getClientRects；不能完整覆盖 SVG、跨上下文或所有系统渠道。Emoji 保留本机字形，系统身份不改变真实渲染。Date 的非标准字符串解析、极端历史年份可能仍保留真实环境特征。网页可以识别 JavaScript 改写，不能保证通过所有指纹检测。请求头只修改发往配置域名的请求，不修改发往其他域名的第三方请求。</p>
         </details>
 
         <footer>

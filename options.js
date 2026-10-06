@@ -287,7 +287,7 @@ async function matchIP(optimize=false){
     const title=document.createElement('strong');title.textContent=`📍 ${r.ip} · ${r.country||''} ${r.city||''}`;result.append(title);
     const list=document.createElement('ul');
     const items=[`✓ 地区与语言：${update.timezone} · ${update.languages.join(', ')}`,`✓ 已开启模拟位置：${update.latitude}, ${update.longitude}（精度 ${update.accuracy} 米）`];
-    if(optimize)items.push('✓ 使用真实浏览器身份（UA 与 Client Hints）','✓ 阻断 WebRTC 连接','✓ 中文字体白名单 + DOM 尺寸保护','✓ 已启用此域名规则');
+    if(optimize)items.push('✓ 使用真实浏览器身份（UA 与 Client Hints）','✓ 阻断 WebRTC 连接','✓ 中文字体白名单 + 轻量 DOM 保护','✓ 已启用此域名规则');
     for(const text of items){const item=document.createElement('li');item.textContent=text;list.append(item);}
     result.append(list);const hint=document.createElement('p');hint.textContent='已填入表单，请核对后保存。IP 位置为近似值，语言来自国家预设。';result.append(hint);result.hidden=false;
     if(optimize)result.scrollIntoView({block:'nearest',behavior:'instant'});
